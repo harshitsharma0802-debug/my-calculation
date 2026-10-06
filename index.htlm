@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pneumatic Cylinder Selector & Weight Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            color: #333;
+            padding: 15px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #1a365d;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #3182ce;
+            padding-bottom: 8px;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            color: #2b6cb0;
+            margin: 15px 0 10px 0;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            background: #f7fafc;
+        }
+        input:focus, select:focus {
+            border-color: #3182ce;
+            background: #fff;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        button {
+            width: 100%;
+            background-color: #3182ce;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2b6cb0;
+        }
+        .result-card {
+            margin-top: 20px;
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-card h3 {
+            color: #2c5282;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dashed #cbd5e0;
+            font-size: 0.95rem;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #2b6cb0;
+        }
+        .recommendation {
+            background: #c6f6d5;
+            border: 1px solid #9ae6b4;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 12px;
+            color: #22543d;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Pneumatic Cylinder Calculator</h2>
+
+    <!-- Section 1: Sheet / Plate Dimensions -->
+    <div class="section-title">1. Sheet / Plate Specification</div>
+    <div class="form-group">
+        <label>Material:</label>
+        <select id="material">
+            <option value="7850">Mild Steel (MS) - 7850 kg/m³</option>
+            <option value="8000">Stainless Steel (SS 304) - 8000 kg/m³</option>
+            <option value="2700">Aluminum - 2700 kg/m³</option>
+            <option value="8500">Brass - 8500 kg/m³</option>
+            <option value="8960">Copper - 8960 kg/m³</option>
+        </select>
+    </div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Length (mm):</label>
+            <input type="number" id="length" placeholder="e.g. 500" value="500">
+        </div>
+        <div class="form-group">
+            <label>Width (mm):</label>
+            <input type="number" id="width" placeholder="e.g. 300" value="300">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Thickness (mm):</label>
+        <input type="number" id="thickness" placeholder="e.g. 10" value="10">
+    </div>
+
+    <!-- Section 2: Setup & Operation Details -->
+    <div class="section-title">2. Operation & Pneumatic Details</div>
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Orientation:</label>
+            <select id="orientation">
+                <option value="horizontal">Horizontal (Sliding)</option>
+                <option value="vertical">Vertical (Lifting)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Action Type:</label>
+            <select id="action">
+                <option value="push">Push (Extension)</option>
+                <option value="pull">Pull (Retraction)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label>Working Pressure (Bar):</label>
+            <input type="number" id="pressure" placeholder="e.g. 6" value="6" step="0.5">
+        </div>
+        <div class="form-group">
+            <label>Stroke Length (mm):</label>
+            <input type="number" id="stroke" placeholder="e.g. 200" value="200">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Safety Factor (Margin):</label>
+        <select id="safetyFactor">
+            <option value="1.3">1.3 (Normal Operation)</option>
+            <option value="1.5" selected>1.5 (Recommended / Standard)</option>
+            <option value="2.0">2.0 (High Load / High Speed)</option>
+        </select>
+    </div>
+
+    <button onclick="calculateCylinder()">Calculate & Select Cylinder</button>
+
+    <!-- Output Result -->
+    <div class="result-card" id="resultCard">
+        <h3>Calculated Results</h3>
+        <div class="result-item">
+            <span>Plate Weight:</span>
+            <span class="highlight" id="resWeight">0 kg</span>
+        </div>
+        <div class="result-item">
+            <span>Required Thrust Force:</span>
+            <span class="highlight" id="resForce">0 N (0 kgf)</span>
+        </div>
+        <div class="result-item">
+            <span>Theoretical Min Bore:</span>
+            <span class="highlight" id="resMinBore">0 mm</span>
+        </div>
+        <div class="recommendation">
+            <strong>Recommended Cylinder:</strong><br>
+            <span id="resCylinder">--</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Standard ISO Cylinder Bore Sizes in mm
+    const standardBores = [12, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200];
+
+    // Typical Piston Rod Diameters for Bore sizes (for Pull force calculation)
+    const rodDiameters = {
+        12: 6, 16: 6, 20: 8, 25: 10, 32: 12, 40: 16,
+        50: 20, 63: 20, 80: 25, 100: 25, 125: 32, 160: 40, 200: 40
+    };
+
+    function calculateCylinder() {
+        // 1. Inputs
+        const density = parseFloat(document.getElementById('material').value);
+        const length = parseFloat(document.getElementById('length').value) / 1000; // in meters
+        const width = parseFloat(document.getElementById('width').value) / 1000;   // in meters
+        const thickness = parseFloat(document.getElementById('thickness').value) / 1000; // in meters
+
+        const orientation = document.getElementById('orientation').value;
+        const action = document.getElementById('action').value;
+        const pressureBar = parseFloat(document.getElementById('pressure').value);
+        const stroke = document.getElementById('stroke').value;
+        const sf = parseFloat(document.getElementById('safetyFactor').value);
+
+        if (!length || !width || !thickness || !pressureBar || !stroke) {
+            alert("Kripya sabhi fields me valid numbers dalein!");
+            return;
+        }
+
+        // 2. Weight Calculation: Vol (m³) * Density (kg/m³)
+        const volume = length * width * thickness;
+        const weightKg = volume * density;
+
+        // 3. Force Requirement Calculation
+        let requiredForceN = 0;
+        const g = 9.81; // Acceleration due to gravity
+
+        if (orientation === "vertical") {
+            // Vertical: Force = Weight * g
+            requiredForceN = weightKg * g;
+        } else {
+            // Horizontal: Force = Weight * g * Coefficient of Friction (μ ≈ 0.3 for steel/metal sliding)
+            const frictionCoeff = 0.3;
+            requiredForceN = weightKg * g * frictionCoeff;
+        }
+
+        // Apply Safety Factor
+        const totalForceN = requiredForceN * sf;
+        const pressurePascal = pressureBar * 100000; // 1 Bar = 100,000 Pa (N/m²)
+
+        // 4. Calculate Minimum Bore Diameter
+        let selectedBore = 0;
+        let theoreticalBoreMm = 0;
+
+        if (action === "push") {
+            // Area = Force / Pressure
+            const areaM2 = totalForceN / pressurePascal;
+            const boreM = Math.sqrt((4 * areaM2) / Math.PI);
+            theoreticalBoreMm = boreM * 1000;
+
+            // Find next standard bore size
+            selectedBore = standardBores.find(b => b >= theoreticalBoreMm);
+        } else {
+            // Pull Action (Account for Rod Diameter)
+            // Area_effective = Area_piston - Area_rod
+            for (let b of standardBores) {
+                const r = rodDiameters[b] || (b * 0.3); // fallback rod size
+                const pistonArea = (Math.PI / 4) * Math.pow(b / 1000, 2);
+                const rodArea = (Math.PI / 4) * Math.pow(r / 1000, 2);
+                const effectiveArea = pistonArea - rodArea;
+
+                const availableForce = effectiveArea * pressurePascal;
+                if (availableForce >= totalForceN) {
+                    selectedBore = b;
+                    break;
+                }
+            }
+            // Rough estimation for min bore output display
+            const estArea = totalForceN / pressurePascal;
+            theoreticalBoreMm = Math.sqrt((4 * estArea) / Math.PI) * 1000 * 1.15; 
+        }
+
+        if (!selectedBore) {
+            selectedBore = "200+ mm (Custom/Heavy Duty Required)";
+        }
+
+        // 5. Output UI Update
+        document.getElementById('resWeight').innerText = weightKg.toFixed(2) + " kg";
+        document.getElementById('resForce').innerText = totalForceN.toFixed(1) + " N (" + (totalForceN / g).toFixed(1) + " kgf)";
+        document.getElementById('resMinBore').innerText = theoreticalBoreMm.toFixed(1) + " mm";
+        
+        document.getElementById('resCylinder').innerText = 
+            `Bore: Ø${selectedBore} mm x Stroke: ${stroke} mm (${action.toUpperCase()} action @ ${pressureBar} Bar)`;
+
+        document.getElementById('resultCard').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
